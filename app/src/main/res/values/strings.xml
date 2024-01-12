@@ -5,7 +5,7 @@
     <string name="next">Pesan</string>
     <string name="cancel">Batal</string>
     <string name="order_summary">Ringkasa Order</string>
-    <string name="send">Send Order to Another App</string>
+    <string name="send">Konfirmasi Pembayaran</string>
     <string name="Quantity">Jumlah</string>
     <string name="Jenis">Jenis</string>
     <string name="subtotal_price">Subtotal : Rp %s</string>
@@ -13,4 +13,5 @@
     <string name="Pameran">Pameran</string>
     <string name="Seni">Seni</string>
     <string name="back" />
+    <string name="confirm_payment">Konfirmasi Pembayaran</string>
 </resources>

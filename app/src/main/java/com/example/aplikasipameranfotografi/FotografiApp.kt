@@ -21,12 +21,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.aplikasipameranfotografi.data.OrderUIState
 import com.example.aplikasipameranfotografi.data.SumberData
 
 enum class FotografiApp {
     Home,
-    Rasa,
-    Summary
+    Jenis,
+    Summary,
+    Tiga,
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,7 +37,7 @@ fun FotografiAppAppBar(
     bisaNavigasiBack: Boolean,
     navigasiUp: () -> Unit,
     modifier: Modifier = Modifier
-){
+) {
     TopAppBar(
         title = { Text(stringResource(R.string.app_name)) },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
@@ -46,9 +48,8 @@ fun FotografiAppAppBar(
             if (bisaNavigasiBack) {
                 IconButton(onClick = navigasiUp) {
                     Icon(
-                        painterResource(R.drawable.arrow_back), contentDescription = stringResource(
-                            R.string.back_button
-                        )
+                        painterResource(R.drawable.arrow_back),
+                        contentDescription = stringResource(R.string.back_button)
                     )
                 }
             }
@@ -75,33 +76,61 @@ fun FotografiApp(
         ) {
             composable(route = FotografiApp.Home.name) {
                 HalamanHome(onNextButtonClicked = {
-                    navController.navigate(FotografiApp.Rasa.name)
-                }
-                )
+                    navController.navigate(FotografiApp.Jenis.name)
+                })
             }
-            composable(route = FotografiApp.Rasa.name) {
+            composable(route = FotografiApp.Jenis.name) {
                 val context = LocalContext.current
                 HalamanSatu(
                     pilihanRasa = SumberData.Jenis.map { id -> context.resources.getString(id) },
                     onSelectionChanged = { viewModel.setRasa(it) },
-                    onConfirmButtonClicked = { viewModel.setJumlah(it) },
-                    onNextButtonClicked = { navController.navigate(FotografiApp.Summary.name) }
-                ) {
-                    cancelOrderAndNavigateToHome(
-                        viewModel,
-                        navController
-                    )
-                }
+                    onConfirmButtonClicked = { jumlahOrder ->
+                        viewModel.setJumlah(jumlahOrder)
+                        // Navigate to HalamanTiga when the confirmation button is clicked
+                        navController.navigate(FotografiApp.Summary.name)
+                    },
+                    onNextButtonClicked = { /* Not needed in this case */ },
+                    onCancelButtonClicked = {
+                        cancelOrderAndNavigateToHome(
+                            viewModel,
+                            navController
+                        )
+                    }
+                )
             }
             composable(route = FotografiApp.Summary.name) {
                 HalamanDua(
                     orderUIState = uiState,
-                    onCancelButtonClicked = { cancelOrderAndNavigateToRasa(navController) })
+                    onNextButtonClicked = {
+                        // Navigate to HalamanTiga when the next button is clicked
+                        navController.navigate("${FotografiApp.Tiga.name}/${uiState.jumlah}/${uiState.Jenis}")
+                    },
+                    onConfirmButtonClicked = {
+                        // Navigate to HalamanTiga when the confirm button is clicked
+                        navController.navigate("${FotografiApp.Tiga.name}/${uiState.jumlah}/${uiState.Jenis}")
+                    },
+                    onCancelButtonClicked = { cancelOrderAndNavigateToRasa(navController) }
+                )
+            }
+            composable(route = FotografiApp.Tiga.name + "/{jumlah}/{jenis}") { backStackEntry ->
+                val jumlah = backStackEntry.arguments?.getString("jumlah")?.toInt() ?: 0
+                val jenis = backStackEntry.arguments?.getString("jenis") ?: ""
+                val orderUIState = OrderUIState(jumlah = jumlah, Jenis = jenis)
+
+                HalamanTiga(
+                    orderUIState = orderUIState,
+                    onPaymentOptionSelected = { /* Handle payment option selected */ },
+                    onCancelButtonClicked = {
+                        cancelOrderAndNavigateToHome(
+                            viewModel,
+                            navController
+                        )
+                    }
+                )
             }
         }
     }
 }
-
 
 private fun cancelOrderAndNavigateToHome(
     viewModel: OrderViewModel,
@@ -114,5 +143,5 @@ private fun cancelOrderAndNavigateToHome(
 private fun cancelOrderAndNavigateToRasa(
     navController: NavHostController
 ) {
-    navController.popBackStack(FotografiApp.Rasa.name, inclusive = false)
+    navController.popBackStack(FotografiApp.Jenis.name, inclusive = false)
 }

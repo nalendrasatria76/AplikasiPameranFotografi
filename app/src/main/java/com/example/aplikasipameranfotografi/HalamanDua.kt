@@ -23,16 +23,20 @@ import com.example.aplikasipameranfotografi.komponen.FormatLabelHarga
 @Composable
 fun HalamanDua(
     orderUIState: OrderUIState,
-    onCancelButtonClicked: () -> Unit
+    onNextButtonClicked: () -> Unit,
+    onConfirmButtonClicked: (Int) -> Unit,
+    onCancelButtonClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val items = listOf(
         Pair(stringResource(R.string.Quantity), orderUIState.jumlah),
-        Pair(stringResource(R.string.Jenis), orderUIState.rasa)
+        Pair(stringResource(R.string.Jenis), orderUIState.Jenis)
     )
 
     Column(
-        modifier = Modifier,
-        verticalArrangement = Arrangement.SpaceBetween
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column(
             modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium)),
@@ -61,7 +65,7 @@ fun HalamanDua(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { }
                 ) {
-                    Text(stringResource(R.string.send))
+                    Text(stringResource(R.string.confirm_payment))
                 }
                 OutlinedButton(
                     modifier = Modifier.fillMaxWidth(),

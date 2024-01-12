@@ -36,6 +36,7 @@ fun FotografiAppPreview() {
     }
 }
 
+
 @Composable
 fun AplikasiPameranFotografiTheme(content: @Composable () -> Unit) {
     // Add your theme settings here if needed
